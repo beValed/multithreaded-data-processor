@@ -5,8 +5,9 @@
 ## Состав команды
 
 - [Битулев Валерий (beValed)](https://github.com/beValed) - Project Manager, Architect
-- [Суханов Дмитрий (Killomaker)](https://github.com/Killomaker) - Lead Developer
+- [Суханов Дмитрий (Killomaker)](https://github.com/Killomaker) - Backend Developer
 - [Колесниченко Данил (koolesoo)](https://github.com/koolesoo) - Tester
+- Абдулаев Муса - Frontend Developer
 
 ## База знаний
 
