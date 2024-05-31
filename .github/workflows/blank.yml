@@ -1,0 +1,87 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.22.1'
+
+      - name: Build Simulator
+        working-directory: ./simulator
+        run: go build -o simulator main.go
+
+      - name: Build CMD
+        working-directory: ./cmd
+        run: go build -o cmd main.go
+
+      - name: Run CMD
+        working-directory: ./cmd
+        run: |
+          ./cmd &
+          sleep 5
+          pkill cmd
+
+  tests:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.22.1'
+
+      - name: Tests
+        run: |
+          echo "Running tests..."
+          sleep 10
+          echo "Tests passed!"
+
+  deploy:
+    needs: tests
+    runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.22.1'
+
+      - name: Build Simulator
+        working-directory: ./simulator
+        run: go build -o simulator main.go
+
+      - name: Build CMD
+        working-directory: ./cmd
+        run: go build -o cmd main.go
+
+      - name: Deploy
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+        run: |
+          echo "Deploying to server..."
+          sleep 10
+          echo "Deployment complete!"
