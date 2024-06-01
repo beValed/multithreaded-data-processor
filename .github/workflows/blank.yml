@@ -20,20 +20,8 @@ jobs:
         with:
           go-version: '1.22.1'
 
-      - name: Build Simulator
-        working-directory: ./simulator
-        run: go build -o simulator main.go
-
-      - name: Build CMD
-        working-directory: ./cmd
-        run: go build -o cmd main.go
-
-      - name: Run CMD
-        working-directory: ./cmd
-        run: |
-          ./cmd &
-          sleep 5
-          pkill cmd
+      - name: Build Docker image
+        run: docker build -t my-app .
 
   tests:
     needs: build
@@ -51,7 +39,7 @@ jobs:
       - name: Tests
         run: |
           echo "Running tests..."
-          sleep 10
+          go test -v ./tests/...
           echo "Tests passed!"
 
   deploy:
@@ -60,28 +48,10 @@ jobs:
 
     if: github.ref == 'refs/heads/main'
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: '1.22.1'
-
-      - name: Build Simulator
-        working-directory: ./simulator
-        run: go build -o simulator main.go
-
-      - name: Build CMD
-        working-directory: ./cmd
-        run: go build -o cmd main.go
-
-      - name: Deploy
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+      - name: Deploy to Test Server
         run: |
           echo "Deploying to server..."
           sleep 10
-          echo "Deployment complete!"
+          docker ps
+          echo "Deployment to test server complete!"
+          
