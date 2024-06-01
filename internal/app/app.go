@@ -30,6 +30,7 @@ func Run() {
 		if err := server.ListenAndServe(); err != nil {
 			log.Println(err)
 		}
+
 	}()
 
 	sigs := make(chan os.Signal)
