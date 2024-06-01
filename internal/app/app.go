@@ -36,6 +36,7 @@ func Run() {
 	signal.Notify(sigs,
 		syscall.SIGINT,
 		os.Interrupt)
+
 	<-sigs
 	ctx, cancel := context.WithTimeout(context.Background(), wait)
 	defer cancel()
